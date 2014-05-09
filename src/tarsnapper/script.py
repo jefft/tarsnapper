@@ -354,42 +354,18 @@ class MakeCommand(ExpireCommand):
             self.log.info(("Skipping '%s', does not define sources") % job.name)
             return
 
-        # Determine whether we can run this job. If any of the sources
-        # are missing, or any source directory is empty, we skip this job.
-        sources_missing = False
-        if not job.force:
-            for source in job.sources:
-                if not path.exists(source):
-                    sources_missing = True
-                    break
-                if path.isdir(source) and not os.listdir(source):
-                    # directory is empty
-                    sources_missing = True
-                    break
-
         # Do a new backup
-        skipped = False
-
-        if sources_missing:
-            if job.name:
-                self.log.info(("Not backing up '%s', because not all given "
-                               "sources exist") % job.name)
-            else:
-                self.log.info("Not making backup, because not all given "
-                              "sources exist")
-            skipped = True
-        else:
-            if job.exec_before:
-                self.backend._exec_util(job.exec_before)
-            try:
-                self.backend.make(job)
-            finally:
-                if job.exec_after:
-                    self.backend._exec_util(job.exec_after)
+	if job.exec_before:
+	    self.backend._exec_util(job.exec_before)
+	try:
+	    self.backend.make(job)
+	finally:
+	    if job.exec_after:
+		self.backend._exec_util(job.exec_after)
 
         # Expire old backups, but only bother if either we made a new
         # backup, or if expire was explicitly requested.
-        if not skipped and not self.args.no_expire:
+        if not self.args.no_expire:
             self.expire(job)
 
 
