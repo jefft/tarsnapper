@@ -62,7 +62,7 @@ class TarsnapBackend(object):
 
     def _exec_tarsnap(self, args):
         self.log.debug("Executing: %s" % " ".join(args))
-        p = subprocess.Popen(args, stdout=subprocess.PIPE,
+        p = subprocess.Popen(" ".join(args), shell=True, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
         (stdout, stderr) = p.communicate()
         if p.returncode != 0:
