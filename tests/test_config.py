@@ -215,3 +215,7 @@ def test_exclude_and_excludes():
           loo
           moo
     """)
+
+def test_foo():
+    """Test fooey"""
+    assert_raises(ConfigError, None, "foo")
